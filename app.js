@@ -20,6 +20,9 @@ const User = require("./MODELS/user.js");
 const dbUrl = process.env.MONGODB_URL;
 
 
+const Listing = require("./MODELS/listing.js");
+
+
 const store = MongoStore.create({
     mongoUrl: dbUrl, 
     crypto: {
@@ -112,6 +115,12 @@ app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
 
+app.get("/search", async (req, res) => {
+    let { location } = req.query;
+    const allListings = await Listing.find({location});
+    res.render("listings/search", {allListings});
+})
+
 app.all("*", (req, res, next) => {
     next(new ExpressError(404, "Page Not Found!"));
 });
@@ -122,3 +131,4 @@ app.use((err,req,res,next) =>{
     //res.status(status).send(message);
 
 });
+
